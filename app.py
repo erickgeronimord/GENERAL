@@ -53,10 +53,12 @@ class KPICalculator:
             if 'FECHA' in self.ventas_df.columns:
                 self.ventas_df['FECHA'] = pd.to_datetime(self.ventas_df['FECHA'])
                 self.ventas_df['YEAR'] = self.ventas_df['FECHA'].dt.year
-                self.ventas_df['MES'] = self.ventas_df['FECHA'].dt.month_name(locale='es')
+                meses_es = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                self.ventas_df['MES'] = self.ventas_df['FECHA'].dt.month
+                self.ventas_df['MES'] = self.ventas_df['MES'].apply(lambda x: meses_es[x - 1])
                 self.ventas_df['DIA_SEM'] = self.ventas_df['FECHA'].dt.day_name(locale='es')
                 self.ventas_df['SEM'] = self.ventas_df['FECHA'].dt.isocalendar().week
-            
             mes_orden = {mes: i+1 for i, mes in enumerate(MESES_ORDEN)}
             self.ventas_df['MES_ORDEN'] = self.ventas_df['MES'].map(mes_orden)
             
