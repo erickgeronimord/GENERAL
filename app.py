@@ -690,18 +690,20 @@ def color_semaforo(valor):
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_data():
-    # URL del archivo de Google Drive (asegúrate de que tenga el ID correcto)
+    # URLs de Google Drive para cada hoja
     file_id = "18eBkLc9V4547Qz7SkejfRSwsWp3mCw4Y"
-    url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    base_url = f"https://drive.google.com/uc?export=download&id={file_id}"
     
     try:
-        ventas_df = pd.read_excel(url, sheet_name="DB_VNT", engine='openpyxl')
+        # Cargar hoja de ventas
+        ventas_df = pd.read_excel(base_url, sheet_name="DB_VNT", engine='openpyxl')
         
         if ventas_df.empty:
             st.error("El archivo de ventas está vacío")
             return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
             
         ventas_df.columns = ventas_df.columns.str.strip().str.upper()
+        
         if 'CODIGO' not in ventas_df.columns:
             ventas_df['CODIGO'] = ventas_df['CLIENTE']
         
@@ -726,8 +728,9 @@ def load_data():
         mes_orden = {mes: i+1 for i, mes in enumerate(MESES_ORDEN)}
         ventas_df['MES_ORDEN'] = ventas_df['MES'].map(mes_orden).fillna(0).astype('int8')
         
+        # Cargar hoja de presupuesto
         try:
-            presupuesto_df = pd.read_excel(file_path, sheet_name="DB_PPTO", engine='openpyxl')
+            presupuesto_df = pd.read_excel(base_url, sheet_name="DB_PPTO", engine='openpyxl')
             presupuesto_df.columns = presupuesto_df.columns.str.strip().str.upper()
             if 'YEAR' not in presupuesto_df.columns and 'FECHA' in presupuesto_df.columns:
                 presupuesto_df['YEAR'] = pd.to_datetime(presupuesto_df['FECHA']).dt.year
@@ -735,8 +738,9 @@ def load_data():
             st.warning(f"No se pudo cargar presupuesto: {str(e)}")
             presupuesto_df = pd.DataFrame()
         
+        # Cargar hoja de clientes
         try:
-            clientes_df = pd.read_excel(file_path, sheet_name="DB_CLI", engine='openpyxl')
+            clientes_df = pd.read_excel(base_url, sheet_name="DB_CLI", engine='openpyxl')
             clientes_df.columns = clientes_df.columns.str.strip().str.upper()
         except Exception as e:
             st.warning(f"No se encontró hoja de clientes. Creando DataFrame vacío. Error: {str(e)}")
