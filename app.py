@@ -57,7 +57,8 @@ class KPICalculator:
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
                 self.ventas_df['MES'] = self.ventas_df['FECHA'].dt.month
                 self.ventas_df['MES'] = self.ventas_df['MES'].apply(lambda x: meses_es[x - 1])
-                self.ventas_df['DIA_SEM'] = self.ventas_df['FECHA'].dt.day_name(locale='es')
+                dias_es = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+                self.ventas_df['DIA_SEM'] = self.ventas_df['FECHA'].dt.weekday.apply(lambda x: dias_es[x])
                 self.ventas_df['SEM'] = self.ventas_df['FECHA'].dt.isocalendar().week
             mes_orden = {mes: i+1 for i, mes in enumerate(MESES_ORDEN)}
             self.ventas_df['MES_ORDEN'] = self.ventas_df['MES'].map(mes_orden)
