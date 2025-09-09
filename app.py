@@ -9,6 +9,52 @@ from plotly.subplots import make_subplots
 import traceback
 
 # =============================================
+# 1. SECCIÓN DE AUTENTICACIÓN (AL PRINCIPIO DEL ARCHIVO)
+# =============================================
+
+# Configuración de usuarios y contraseñas
+USUARIOS = {
+    "master": "idemefa2585"
+}
+
+def check_auth():
+    """Verifica si el usuario está autenticado"""
+    return st.session_state.get("autenticado", False)
+
+def login():
+    """Muestra el formulario de login"""
+    st.title("🔐 Acceso al Dashboard")
+    with st.form("login_form"):
+        usuario = st.text_input("Usuario")
+        password = st.text_input("Contraseña", type="password")
+        submit = st.form_submit_button("Ingresar")
+        
+        if submit:
+            if usuario in USUARIOS and USUARIOS[usuario] == password:
+                st.session_state["autenticado"] = True
+                st.session_state["usuario"] = usuario
+                st.rerun()  # Recarga la app para mostrar el dashboard
+            else:
+                st.error("❌ Usuario o contraseña incorrectos")
+
+def logout():
+    """Cierra la sesión del usuario"""
+    st.session_state["autenticado"] = False
+    st.session_state["usuario"] = None
+    st.rerun()
+
+# =============================================
+# 2. VERIFICACIÓN DE AUTENTICACIÓN (ANTES DEL DASHBOARD)
+# =============================================
+if not check_auth():
+    login()
+    st.stop()  # Detiene la ejecución si no está autenticado
+
+# =============================================
+# 3. EL RESTO DE TU DASHBOARD (CONTENIDO PROTEGIDO)
+# =============================================
+
+# =============================================
 # CONFIGURACIÓN Y CONSTANTES
 # =============================================
 
@@ -3275,4 +3321,5 @@ if __name__ == "__main__":
     </style>
     """, unsafe_allow_html=True)
     
+
     main()
